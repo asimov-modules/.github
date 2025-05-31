@@ -1,0 +1,32 @@
+# See: https://docs.github.com/en/actions/sharing-automations/reusing-workflows
+# See: https://github.com/nearform-actions/github-action-notify-twitter
+---
+name: Tweet
+
+on:
+  workflow_call:
+    inputs:
+      message:
+        type: string
+    secrets:
+      X_APP_KEY:
+        required: true
+      X_APP_SECRET:
+        required: true
+      X_ACCESS_TOKEN:
+        required: true
+      X_ACCESS_SECRET:
+        required: true
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nearform-actions/github-action-notify-twitter@v1.2.3
+        with:
+          message: ${{ inputs.message }}
+          twitter-app-key: ${{ secrets.X_APP_KEY }}
+          twitter-app-secret: ${{ secrets.X_APP_SECRET }}
+          twitter-access-token: ${{ secrets.X_ACCESS_TOKEN }}
+          twitter-access-token-secret: ${{ secrets.X_ACCESS_SECRET }}
