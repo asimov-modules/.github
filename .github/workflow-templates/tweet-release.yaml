@@ -13,6 +13,6 @@ jobs:
     uses: asimov-modules/.github/.github/workflows/tweet.yaml@master
     with:
       message: |
-        ${{ github.event.repository.name }} ${{ github.event.release.tag_name }} has been released:
+        📦 ${{ github.event.repository.name }} ${{ github.event.release.tag_name }} has been released:
         ${{ github.event.release.html_url }}
     secrets: inherit
