@@ -1,6 +1,6 @@
 # See: https://docs.github.com/en/actions/writing-workflows
 ---
-name: Update Homebrew tap
+name: Prepare Homebrew
 
 on:
   workflow_call:
