@@ -1,0 +1,97 @@
+# See: https://docs.github.com/en/actions/writing-workflows
+---
+name: Build Homebrew bottle
+description: Build Homebrew bottle
+
+inputs:
+  version:
+    required: false
+    description: New version
+    default: ${{ github.ref_name }}
+  bump_formula:
+    required: false
+    description: Bump formula?
+    default: "true"
+  app_id:
+    required: true
+    description: GitHub App ID
+  app_private_key:
+    required: true
+    description: GitHub App private key
+  formula_owner:
+    required: false
+    description: Homebrew formula owner (not TAP owner)
+    default: asimov-modules
+  formula_name:
+    required: false
+    description: Homebrew formula name
+    default: ${{ github.event.repository.name }}
+
+runs:
+  using: composite
+  steps:
+    - name: Obtain token for formula repository
+      uses: actions/create-github-app-token@v2
+      id: current-app-token
+      with:
+        app-id: ${{ inputs.app_id }}
+        private-key: ${{ inputs.app_private_key }}
+        permission-contents: read
+        owner: ${{ inputs.formula_owner }}
+        repositories: ${{ inputs.formula_name }}
+    - name: Setup Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@main
+      with:
+        token: ${{ steps.current-app-token.outputs.token }}
+    - name: Configure homebrew
+      shell: bash
+      run: |
+        echo "HOMEBREW_NO_ENV_HINTS=TRUE" >> $GITHUB_ENV
+        brew tap asimov-modules/tap-new
+    - name: Fetch dependencies
+      shell: pwsh
+      run: |
+        $installed = @(brew list --formula --full-name)
+        $dependencies = @(brew deps --formula --include-build --include-test --full-name asimov-modules/tap-new/${{ inputs.formula_name }})
+        $dependencies = $dependencies | Where-Object { $installed -notcontains $_ }
+
+        brew fetch --formulae --retry @dependencies
+    - name: Install dependencies
+      shell: bash
+      run: brew install --only-dependencies --verbose --formula --build-bottle asimov-modules/tap-new/${{ inputs.formula_name }}
+    - name: Fetch formula
+      shell: bash
+      run: brew fetch --formula --retry asimov-modules/tap-new/${{ inputs.formula_name }} --build-bottle --force
+    - name: Bump formula
+      if: ${{ inputs.bump_formula == 'true' }}
+      continue-on-error: true
+      shell: pwsh
+      run: |
+        $url = "https://github.com/${{ inputs.formula_owner }}/${{ inputs.formula_name }}/archive/refs/tags/${{ inputs.version }}.tar.gz"
+        brew bump-formula-pr --no-browse --no-fork --no-audit --write-only --url $url asimov-modules/tap-new/${{ inputs.formula_name }}
+    - name: Install formula
+      shell: bash
+      run: brew install --verbose --formula --build-bottle asimov-modules/tap-new/${{ inputs.formula_name }}
+    - name: Generate bottle
+      shell: bash
+      working-directory: ${{ runner.temp }}
+      run: |
+        mkdir brew
+        cd brew
+
+        output=$(brew bottle --verbose --json asimov-modules/tap-new/${{ inputs.formula_name }} --root-url=https://ghcr.io/v2/asimov-modules/tap-new)
+
+        bottle_path=$(echo "$output" | sed -n -E 's|.*(\./[^[:space:]]*\.[a-z0-9_]+\.bottle\.([0-9]+\.)?tar\.gz).*|\1|p') # What?
+        echo "Bottle path: $bottle_path"
+
+        bottle_json_path=$(echo "$bottle_path" | sed -E 's/\.([0-9]+\.)?tar\.gz$/.json/')
+        echo "Bottle JSON path: $bottle_json_path"
+
+        brew bottle --merge --write --no-commit --no-all-checks "$bottle_json_path"
+    - name: Upload formula
+      uses: actions/upload-artifact@v4
+      with:
+        name: bottles_${{ runner.os }}-${{ runner.arch }}
+        path: ${{ runner.temp }}/brew/*.bottle.*
+        if-no-files-found: error

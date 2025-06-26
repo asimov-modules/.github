@@ -1,0 +1,130 @@
+# See: https://docs.github.com/en/actions/writing-workflows
+---
+name: Update Homebrew tap
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: false
+        type: string
+        default: ${{ github.ref_name }}
+      bump_formula:
+        required: false
+        type: boolean
+        default: true
+      formula_owner:
+        required: false
+        type: string
+        default: asimov-modules
+      formula_name:
+        required: false
+        type: string
+        default: ${{ github.event.repository.name }}
+    secrets:
+      ASIMOV_APP_ID:
+        required: true
+      ASIMOV_APP_PRIVATE_KEY:
+        required: true
+
+jobs:
+  update-homebrew-tap:
+    name: Update Homebrew tap
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Obtain token for Homebrew tap
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.ASIMOV_APP_ID }}
+          private-key: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
+          permission-contents: write
+          owner: asimov-modules
+          repositories: homebrew-tap-new
+      - name: Obtain token for current repository
+        uses: actions/create-github-app-token@v2
+        id: current-app-token
+        with:
+          app-id: ${{ secrets.ASIMOV_APP_ID }}
+          private-key: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
+          permission-actions: read
+          permission-packages: write
+      - name: Set github credentials
+        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          user_id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)
+          git config --global user.name '${{ steps.app-token.outputs.app-slug }}'
+          git config --global user.email '${user_id}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+      - name: Setup Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@main
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+      - name: Configure homebrew
+        shell: bash
+        run: |
+          echo "HOMEBREW_NO_ENV_HINTS=TRUE" >> $GITHUB_ENV
+          brew tap asimov-modules/tap-new
+      - name: Fetch formula
+        shell: bash
+        run: brew fetch --formula --retry asimov-modules/tap-new/${{ inputs.formula_name }} --force
+      - name: Bump formula
+        if: ${{ inputs.bump_formula }}
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $url = "https://github.com/${{ inputs.formula_owner }}/${{ inputs.formula_name }}/archive/refs/tags/${{ inputs.version }}.tar.gz"
+          brew bump-formula-pr --no-browse --no-fork --no-audit --write-only --url $url asimov-modules/tap-new/${{ inputs.formula_name }}
+      - name: Pull bottles
+        id: pull-bottles
+        uses: actions/download-artifact@v4
+        with:
+          pattern: bottles_*
+          merge-multiple: true
+          github-token: ${{ steps.current-app-token.outputs.token }}
+      - name: Publish bottles
+        shell: bash
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ steps.app-token.outputs.token }}
+          HOMEBREW_GITHUB_PACKAGES_TOKEN: ${{ github.token }}
+          HOMEBREW_GITHUB_PACKAGES_USER: ${{ github.repository_owner }}
+          # GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          brew pr-upload --verbose --debug
+      - name: Push commits
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          cd "$(brew --repository asimov-modules/tap-new)"
+
+          $WAIT_SECONDS = 5
+          $MAX_RETRIES = 15
+          $RETRIES = 0
+
+          # Try to push the changes
+          while ($RETRIES -lt $MAX_RETRIES) {
+              Write-Host "Trying to push changes... (attempt $RETRIES)"
+              git pull --rebase
+              git push
+
+              if ($LASTEXITCODE -eq 0) {
+                  Write-Host "Push succeeded."
+                  break
+              }
+
+              Write-Host "Push failed. Retrying in $WAIT_SECONDS seconds..."
+              Start-Sleep -Seconds $WAIT_SECONDS
+              $RETRIES++
+          }
+
+          # Check if we exhausted all retries
+          if ($RETRIES -eq $MAX_RETRIES) {
+              Write-Host "ERROR: Failed to push after $MAX_RETRIES attempts"
+              exit 1
+          }
