@@ -43,7 +43,7 @@ jobs:
           private-key: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
           permission-contents: write
           owner: asimov-modules
-          repositories: homebrew-tap-new
+          repositories: homebrew-tap
       - name: Obtain token for current repository
         uses: actions/create-github-app-token@v2
         id: current-app-token
@@ -69,17 +69,17 @@ jobs:
         shell: bash
         run: |
           echo "HOMEBREW_NO_ENV_HINTS=TRUE" >> $GITHUB_ENV
-          brew tap asimov-modules/tap-new
+          brew tap asimov-modules/tap
       - name: Fetch formula
         shell: bash
-        run: brew fetch --formula --retry asimov-modules/tap-new/${{ inputs.formula_name }} --force
+        run: brew fetch --formula --retry asimov-modules/tap/${{ inputs.formula_name }} --force
       - name: Bump formula
         if: ${{ inputs.bump_formula }}
         continue-on-error: true
         shell: pwsh
         run: |
           $url = "https://github.com/${{ inputs.formula_owner }}/${{ inputs.formula_name }}/archive/refs/tags/${{ inputs.version }}.tar.gz"
-          brew bump-formula-pr --no-browse --no-fork --no-audit --write-only --url $url asimov-modules/tap-new/${{ inputs.formula_name }}
+          brew bump-formula-pr --no-browse --no-fork --no-audit --write-only --url $url asimov-modules/tap/${{ inputs.formula_name }}
       - name: Pull bottles
         id: pull-bottles
         uses: actions/download-artifact@v4
@@ -101,7 +101,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          cd "$(brew --repository asimov-modules/tap-new)"
+          cd "$(brew --repository asimov-modules/tap)"
 
           $WAIT_SECONDS = 5
           $MAX_RETRIES = 15

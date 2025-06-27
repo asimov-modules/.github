@@ -36,7 +36,7 @@ jobs:
           app-id: ${{ secrets.ASIMOV_APP_ID }}
           private-key: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
           owner: asimov-modules
-          repositories: homebrew-tap-new
+          repositories: homebrew-tap
           permission-contents: write
       - name: Check formula
         id: check-formula
@@ -44,7 +44,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          if [ "$(gh api repos/asimov-modules/homebrew-tap-new/contents/Formula/$${ inputs.formula_name }}.rb | jq 'has("size")')" = "false" ]; then
+          if [ "$(gh api repos/asimov-modules/homebrew-tap/contents/Formula/$${ inputs.formula_name }}.rb | jq 'has("size")')" = "false" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
@@ -69,7 +69,7 @@ jobs:
         shell: pwsh
         run: |
           echo "HOMEBREW_NO_ENV_HINTS=TRUE" >> $GITHUB_ENV
-          brew tap asimov-modules/tap-new
+          brew tap asimov-modules/tap
 
           function ConvertTo-PascalCase {
             param (
@@ -130,7 +130,7 @@ jobs:
             $sha256, `
             "https://github.com/${{ github.repository }}.git"
 
-          cd "$(brew --repository asimov-modules/tap-new)"
+          cd "$(brew --repository asimov-modules/tap)"
 
           $path = Join-Path "Formula" "${{ inputs.formula_name }}.rb"
           Set-Content -Path $path -Value $formula
