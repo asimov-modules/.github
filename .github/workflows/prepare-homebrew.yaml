@@ -9,6 +9,20 @@ on:
         required: false
         type: string
         default: ${{ github.ref_name }}
+      tap_owner:
+        required: false
+        type: string
+        description: Homebrew tap owner
+        default: ${{ github.repository_owner }}
+      tap_name:
+        required: false
+        type: string
+        description: Homebrew tap name
+        default: tap
+      formula_owner:
+        required: false
+        type: string
+        default: ${{ github.repository_owner }}
       formula_name:
         required: false
         type: string
@@ -35,8 +49,8 @@ jobs:
         with:
           app-id: ${{ secrets.ASIMOV_APP_ID }}
           private-key: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
-          owner: asimov-modules
-          repositories: homebrew-tap
+          owner: ${{ inputs.tap_owner }}
+          repositories: ${{ inputs.tap_name }}
           permission-contents: write
       - name: Check formula
         id: check-formula
@@ -44,7 +58,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          if [ "$(gh api repos/asimov-modules/homebrew-tap/contents/Formula/$${ inputs.formula_name }}.rb | jq 'has("size")')" = "false" ]; then
+          if [ "$(gh api repos/${{ inputs.tap_owner }}/homebrew-${{ inputs.tap_name }}/contents/Formula/$${ inputs.formula_name }}.rb | jq 'has("size")')" = "false" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
@@ -69,7 +83,7 @@ jobs:
         shell: pwsh
         run: |
           echo "HOMEBREW_NO_ENV_HINTS=TRUE" >> $GITHUB_ENV
-          brew tap asimov-modules/tap
+          brew tap ${{ inputs.tap_owner }}/${{ inputs.tap_name }}
 
           function ConvertTo-PascalCase {
             param (
@@ -130,7 +144,7 @@ jobs:
             $sha256, `
             "https://github.com/${{ github.repository }}.git"
 
-          cd "$(brew --repository asimov-modules/tap)"
+          cd "$(brew --repository ${{ inputs.tap_owner }}/${{ inputs.tap_name }})"
 
           $path = Join-Path "Formula" "${{ inputs.formula_name }}.rb"
           Set-Content -Path $path -Value $formula

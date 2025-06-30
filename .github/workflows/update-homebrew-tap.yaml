@@ -13,10 +13,20 @@ on:
         required: false
         type: boolean
         default: true
+      tap_owner:
+        required: false
+        type: string
+        description: Homebrew tap owner
+        default: ${{ github.repository_owner }}
+      tap_name:
+        required: false
+        type: string
+        description: Homebrew tap name
+        default: tap
       formula_owner:
         required: false
         type: string
-        default: asimov-modules
+        default: ${{ github.repository_owner }}
       formula_name:
         required: false
         type: string
@@ -42,9 +52,9 @@ jobs:
           app-id: ${{ secrets.ASIMOV_APP_ID }}
           private-key: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
           permission-contents: write
-          owner: asimov-modules
-          repositories: homebrew-tap
-      - name: Obtain token for current repository
+          owner: ${{ inputs.tap_owner }}
+          repositories: ${{ inputs.tap_name }}
+      - name: Obtain token for formula repository
         uses: actions/create-github-app-token@v2
         id: current-app-token
         with:
@@ -69,17 +79,17 @@ jobs:
         shell: bash
         run: |
           echo "HOMEBREW_NO_ENV_HINTS=TRUE" >> $GITHUB_ENV
-          brew tap asimov-modules/tap
+          brew tap ${{ inputs.tap_owner }}/${{ inputs.tap_name }}
       - name: Fetch formula
         shell: bash
-        run: brew fetch --formula --retry asimov-modules/tap/${{ inputs.formula_name }} --force
+        run: brew fetch --formula --retry ${{ inputs.tap_owner }}/${{ inputs.tap_name }}/${{ inputs.formula_name }} --force
       - name: Bump formula
         if: ${{ inputs.bump_formula }}
         continue-on-error: true
         shell: pwsh
         run: |
           $url = "https://github.com/${{ inputs.formula_owner }}/${{ inputs.formula_name }}/archive/refs/tags/${{ inputs.version }}.tar.gz"
-          brew bump-formula-pr --no-browse --no-fork --no-audit --write-only --url $url asimov-modules/tap/${{ inputs.formula_name }}
+          brew bump-formula-pr --no-browse --no-fork --no-audit --write-only --url $url ${{ inputs.tap_owner }}/${{ inputs.tap_name }}/${{ inputs.formula_name }}
       - name: Pull bottles
         id: pull-bottles
         uses: actions/download-artifact@v4
@@ -101,7 +111,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          cd "$(brew --repository asimov-modules/tap)"
+          cd "$(brew --repository ${{ inputs.tap_owner }}/${{ inputs.tap_name }})"
 
           $WAIT_SECONDS = 5
           $MAX_RETRIES = 15
