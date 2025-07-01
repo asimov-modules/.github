@@ -89,17 +89,18 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
     uses: asimov-modules/.github/.github/workflows/release-module.yaml@master
+    secrets: inherit
 
   tweet-release:
     name: Tweet release
     if: ${{ inputs.tweet_release == 'true' }}
     needs: release
     uses: asimov-modules/.github/.github/workflows/tweet.yaml@master
+    secrets: inherit
     with:
       message: |
         📦 ${{ github.event.repository.name }} ${{ github.ref_name }} has been released:
         ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
-    secrets: inherit
 
   update-scoop-bucket:
     name: Update Scoop bucket
