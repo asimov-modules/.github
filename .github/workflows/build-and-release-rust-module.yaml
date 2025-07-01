@@ -1,0 +1,122 @@
+# See: https://docs.github.com/en/actions/writing-workflows
+---
+name: Build & Release ASIMOV rust module
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: false
+        type: string
+        default: ${{ github.ref_name }}
+      update_homebrew_tap:
+        required: false
+        type: boolean
+        default: false
+      update_scoop_bucket:
+        required: false
+        type: boolean
+        default: false
+      tweet_release:
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      ASIMOV_APP_ID:
+        required: true
+      ASIMOV_APP_PRIVATE_KEY:
+        required: true
+
+jobs:
+  prepare-homebrew:
+    name: Prepare Homebrew
+    if: ${{ inputs.update_homebrew_tap == 'true' }}
+    uses: asimov-modules/.github/.github/workflows/prepare-homebrew-formula.yaml@master
+    secrets: inherit
+
+  build:
+    needs: prepare-homebrew
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: linux-x86-gnu
+            target: x86_64-unknown-linux-gnu
+            build-homebrew-bottle: ${{ inputs.update_homebrew_tap == 'true' }}
+            use-zigbuild: true
+            glibc-version: 2.28
+          - os: ubuntu-latest
+            artifact: linux-arm-gnu
+            target: aarch64-unknown-linux-gnu
+            use-zigbuild: true
+            glibc-version: 2.28
+          - os: ubuntu-latest
+            artifact: linux-x86-musl
+            target: x86_64-unknown-linux-musl
+            use-zigbuild: true
+          - os: ubuntu-latest
+            artifact: linux-arm-musl
+            target: aarch64-unknown-linux-musl
+            use-zigbuild: true
+          - os: macos-13
+            artifact: macos-x86
+            target: x86_64-apple-darwin
+            build-homebrew-bottle: ${{ inputs.update_homebrew_tap == 'true' }}
+          - os: macos-15
+            artifact: macos-arm
+            target: aarch64-apple-darwin
+            build-homebrew-bottle: ${{ inputs.update_homebrew_tap == 'true' }}
+          - os: ubuntu-latest
+            artifact: windows-x64
+            target: x86_64-pc-windows-gnu
+            extension: exe
+    name: Build ${{ matrix.artifact }}
+    uses: asimov-modules/.github/.github/workflows/build-rust-module.yaml@master
+    with:
+      os: ${{ matrix.os }}
+      artifact: ${{ matrix.artifact }}
+      target: ${{ matrix.target }}
+      build-homebrew-bottle: ${{ matrix.build-homebrew-bottle }}
+      use-zigbuild: ${{ matrix.use-zigbuild }}
+      glibc-version: ${{ matrix.glibc-version }}
+      extension: ${{ matrix.extension }}
+      rust-toolchain: 1.85.0
+
+  release:
+    name: Release
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    uses: asimov-modules/.github/.github/workflows/release-module.yaml@master
+
+  tweet-release:
+    name: Tweet release
+    if: ${{ inputs.tweet_release == 'true' }}
+    needs: release
+    uses: asimov-modules/.github/.github/workflows/tweet.yaml@master
+    with:
+      message: |
+        📦 ${{ github.event.repository.name }} ${{ github.ref_name }} has been released:
+        ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+    secrets: inherit
+
+  update-scoop-bucket:
+    name: Update Scoop bucket
+    if: ${{ inputs.update_scoop_bucket == 'true' && startsWith(github.ref, 'refs/tags/') }}
+    needs: release
+    uses: asimov-modules/.github/.github/workflows/update-scoop-bucket.yaml@master
+    secrets: inherit
+    with:
+      assets: ${{ needs.release.outputs.assets }}
+
+  update-homebrew-tap:
+    name: Update Homebrew tap
+    needs: [prepare-homebrew, release]
+    if: ${{ inputs.update_homebrew_tap == 'true' && startsWith(github.ref, 'refs/tags/') }}
+    uses: asimov-modules/.github/.github/workflows/update-homebrew-tap.yaml@master
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+    with:
+      bump_formula: ${{ needs.prepare-homebrew.outputs.bump_formula == 'true' }}
