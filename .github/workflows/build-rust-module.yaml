@@ -46,7 +46,7 @@ on:
 
 jobs:
   build-rust-module:
-    name: Build ${{ inputs.artifact }}
+    name: Build ${{ inputs.artifact }} binary
     runs-on: ${{ inputs.os }}
     steps:
       - name: Build
@@ -60,7 +60,7 @@ jobs:
           glibc-version: ${{ inputs.glibc_version }}
           rust-toolchain: ${{ inputs.rust_toolchain }}
   build-homebrew-bottle:
-    name: Build Homebrew bottle
+    name: Build ${{ inputs.artifact }} bottle
     if: ${{ inputs.build_homebrew_bottle }}
     runs-on: ${{ inputs.os }}
     steps:
