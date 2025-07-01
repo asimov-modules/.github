@@ -33,7 +33,7 @@ on:
 
 jobs:
   update-homebrew-tap:
-    uses: asimov-platform/actions/workflows/prepare-homebrew-formula.yaml@master
+    uses: asimov-platform/actions/.github/workflows/prepare-homebrew-formula.yaml@master
     secrets: inherit
     with:
       version: ${{ inputs.version }}

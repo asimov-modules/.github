@@ -14,7 +14,7 @@ on:
 
 jobs:
   update-scoop-bucket:
-    uses: asimov-platform/actions/workflows/update-scoop-bucket.yaml@master
+    uses: asimov-platform/actions/.github/workflows/update-scoop-bucket.yaml@master
     secrets: inherit
     with:
       version: ${{ inputs.version }}

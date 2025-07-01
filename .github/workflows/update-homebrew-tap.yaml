@@ -34,7 +34,7 @@ on:
 
 jobs:
   update-homebrew-tap:
-    uses: asimov-platform/actions/workflows/update-homebrew-tap.yaml@master
+    uses: asimov-platform/actions/.github/workflows/update-homebrew-tap.yaml@master
     permissions:
       contents: read
       packages: write
