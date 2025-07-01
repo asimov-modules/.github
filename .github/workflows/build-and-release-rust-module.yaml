@@ -77,11 +77,11 @@ jobs:
       os: ${{ matrix.os }}
       artifact: ${{ matrix.artifact }}
       target: ${{ matrix.target }}
-      build-homebrew-bottle: ${{ matrix.build-homebrew-bottle }}
-      use-zigbuild: ${{ matrix.use-zigbuild }}
-      glibc-version: ${{ matrix.glibc-version }}
+      build_homebrew_bottle: ${{ matrix.build-homebrew-bottle }}
+      use_zigbuild: ${{ matrix.use-zigbuild }}
+      glibc_version: ${{ matrix.glibc-version }}
       extension: ${{ matrix.extension }}
-      rust-toolchain: 1.85.0
+      rust_toolchain: 1.85.0
 
   release:
     name: Release
