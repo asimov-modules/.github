@@ -30,8 +30,8 @@ on:
 jobs:
   prepare-homebrew:
     name: Prepare Homebrew
-    if: ${{ inputs.update_homebrew_tap == 'true' }}
-    uses: asimov-platform/actions/.github/workflows/prepare-homebrew-formula.yaml@master
+    # if: ${{ inputs.update_homebrew_tap == 'true' }}
+    uses: asimov-modules/.github/.github/workflows/prepare-homebrew-formula.yaml@master
     secrets: inherit
 
   # build:
