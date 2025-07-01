@@ -29,7 +29,7 @@ on:
         default: ${{ github.event.repository.name }}
     outputs:
       bump_formula:
-        value: ${{ jobs.update-homebrew-tap.outputs.bump_formula }}
+        value: ${{ jobs.prepare-homebrew-formula.outputs.bump_formula }}
     secrets:
       ASIMOV_APP_ID:
         required: true
@@ -37,7 +37,8 @@ on:
         required: true
 
 jobs:
-  update-homebrew-tap:
+  prepare-homebrew-formula:
+    name: Prepare Homebrew
     uses: asimov-platform/actions/.github/workflows/prepare-homebrew-formula.yaml@master
     secrets:
       ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
