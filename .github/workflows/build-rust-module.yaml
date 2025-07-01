@@ -61,7 +61,7 @@ jobs:
           rust-toolchain: ${{ inputs.rust_toolchain }}
   build-homebrew-bottle:
     name: Build Homebrew bottle
-    if: ${{ inputs.build_homebrew_bottle == true }}
+    if: ${{ inputs.build_homebrew_bottle }}
     runs-on: ${{ inputs.os }}
     steps:
       - name: Build
