@@ -73,6 +73,7 @@ jobs:
             extension: exe
     name: Build ${{ matrix.artifact }}
     uses: asimov-modules/.github/.github/workflows/build-rust-module.yaml@master
+    secrets: inherit
     with:
       os: ${{ matrix.os }}
       artifact: ${{ matrix.artifact }}
