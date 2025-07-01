@@ -79,6 +79,7 @@ jobs:
       artifact: ${{ matrix.artifact }}
       target: ${{ matrix.target }}
       build_homebrew_bottle: ${{ matrix.build-homebrew-bottle || false }}
+      bump_homebrew_formula: ${{ (inputs.update_homebrew_tap && needs.prepare-homebrew.outputs.bump_formula) || false }}
       use_zigbuild: ${{ matrix.use-zigbuild || false }}
       glibc_version: ${{ matrix.glibc-version }}
       extension: ${{ matrix.extension }}
