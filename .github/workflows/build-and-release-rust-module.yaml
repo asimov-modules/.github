@@ -28,11 +28,17 @@ on:
         required: true
 
 jobs:
-  prepare-homebrew:
-    name: Prepare Homebrew
-    if: ${{ inputs.update_homebrew_tap == 'true' }}
-    uses: asimov-modules/.github/.github/workflows/prepare-homebrew-formula.yaml@master
-    secrets: inherit
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test
+        run: echo "Hello World"
+  # prepare-homebrew:
+  #   name: Prepare Homebrew
+  #   if: ${{ inputs.update_homebrew_tap == 'true' }}
+  #   uses: asimov-modules/.github/.github/workflows/prepare-homebrew-formula.yaml@master
+  #   secrets: inherit
 
   # build:
   #   needs: prepare-homebrew
