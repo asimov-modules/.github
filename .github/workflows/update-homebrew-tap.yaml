@@ -43,7 +43,9 @@ jobs:
     permissions:
       contents: read
       packages: write
-    secrets: inherit
+    secrets:
+      ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
+      ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
     with:
       version: ${{ inputs.version }}
       bump_formula: ${{ inputs.bump_formula }}

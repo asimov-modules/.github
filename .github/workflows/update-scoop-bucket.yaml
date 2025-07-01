@@ -21,7 +21,9 @@ on:
 jobs:
   update-scoop-bucket:
     uses: asimov-platform/actions/.github/workflows/update-scoop-bucket.yaml@master
-    secrets: inherit
+    secrets:
+      ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
+      ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
     with:
       version: ${{ inputs.version }}
       assets: ${{ inputs.assets }}

@@ -39,7 +39,9 @@ on:
 jobs:
   update-homebrew-tap:
     uses: asimov-platform/actions/.github/workflows/prepare-homebrew-formula.yaml@master
-    secrets: inherit
+    secrets:
+      ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
+      ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
     with:
       version: ${{ inputs.version }}
       tap_owner: ${{ inputs.tap_owner }}
