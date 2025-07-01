@@ -1,0 +1,72 @@
+# See: https://docs.github.com/en/actions/writing-workflows
+---
+name: Build ASIMOV rust module
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: true
+        type: string
+      artifact:
+        required: true
+        type: string
+      target:
+        required: true
+        type: string
+      build_homebrew_bottle:
+        required: false
+        type: boolean
+        default: false
+      bump_homebrew_formula:
+        required: false
+        type: boolean
+        default: true
+      use_zigbuild:
+        required: false
+        type: boolean
+        default: false
+      glibc_version:
+        required: false
+        type: string
+        default: ""
+      extension:
+        required: false
+        type: string
+        default: ""
+      rust_toolchain:
+        required: false
+        type: string
+        default: "stable"
+    secrets:
+      ASIMOV_APP_ID:
+        required: true
+      ASIMOV_APP_PRIVATE_KEY:
+        required: true
+
+jobs:
+  build-rust-module:
+    name: Build ${{ inputs.artifact }}
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Build
+        uses: asimov-platform/build-rust-action@v6
+        with:
+          target: ${{ inputs.target }}
+          gh-artifact-prefix: "file-"
+          artifact-suffix: ${{ inputs.artifact }}
+          binary-extension: ${{ inputs.extension }}
+          use-zigbuild: ${{ inputs.use_zigbuild || 'false' }}
+          glibc-version: ${{ inputs.glibc_version }}
+          rust-toolchain: ${{ inputs.rust_toolchain }}
+  build-homebrew-bottle:
+    name: Build Homebrew bottle
+    if: ${{ inputs.build_homebrew_bottle == true }}
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Build
+        uses: asimov-platform/actions/build-homebrew-bottle@master
+        with:
+          bump_formula: ${{ inputs.bump_homebrew_formula }}
+          app_id: ${{ secrets.ASIMOV_APP_ID }}
+          app_private_key: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
