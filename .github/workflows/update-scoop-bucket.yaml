@@ -12,6 +12,11 @@ on:
       assets:
         required: true
         type: string
+    secrets:
+      ASIMOV_APP_ID:
+        required: true
+      ASIMOV_APP_PRIVATE_KEY:
+        required: true
 
 jobs:
   update-scoop-bucket:

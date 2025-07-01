@@ -31,6 +31,11 @@ on:
         required: false
         type: string
         default: ${{ github.event.repository.name }}
+    secrets:
+      ASIMOV_APP_ID:
+        required: true
+      ASIMOV_APP_PRIVATE_KEY:
+        required: true
 
 jobs:
   update-homebrew-tap:
