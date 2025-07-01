@@ -1,0 +1,43 @@
+# See: https://docs.github.com/en/actions/writing-workflows
+---
+name: Prepare Homebrew
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: false
+        type: string
+        default: ${{ github.ref_name }}
+      tap_owner:
+        required: false
+        type: string
+        description: Homebrew tap owner
+        default: ${{ github.repository_owner }}
+      tap_name:
+        required: false
+        type: string
+        description: Homebrew tap name
+        default: tap
+      formula_owner:
+        required: false
+        type: string
+        default: ${{ github.repository_owner }}
+      formula_name:
+        required: false
+        type: string
+        default: ${{ github.event.repository.name }}
+    outputs:
+      bump_formula:
+        value: ${{ jobs.update-homebrew-tap.outputs.bump_formula }}
+
+jobs:
+  update-homebrew-tap:
+    uses: asimov-platform/actions/workflows/prepare-homebrew-formula.yaml@master
+    secrets: inherit
+    with:
+      version: ${{ inputs.version }}
+      tap_owner: ${{ inputs.tap_owner }}
+      tap_name: ${{ inputs.tap_name }}
+      formula_owner: ${{ inputs.formula_owner }}
+      formula_name: ${{ inputs.formula_name }}
