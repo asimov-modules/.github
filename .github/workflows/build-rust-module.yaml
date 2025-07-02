@@ -5,6 +5,10 @@ name: Build ASIMOV rust module
 on:
   workflow_call:
     inputs:
+      enabled:
+        required: false
+        type: boolean
+        default: true
       os:
         required: true
         type: string
@@ -47,6 +51,7 @@ on:
 jobs:
   build-rust-module:
     name: Build ${{ inputs.artifact }} binary
+    if: ${{ inputs.enabled }}
     runs-on: ${{ inputs.os }}
     steps:
       - name: Build
@@ -61,7 +66,7 @@ jobs:
           rust-toolchain: ${{ inputs.rust_toolchain }}
   build-homebrew-bottle:
     name: Build ${{ inputs.artifact }} bottle
-    if: ${{ inputs.build_homebrew_bottle }}
+    if: ${{ inputs.enabled && inputs.build_homebrew_bottle }}
     runs-on: ${{ inputs.os }}
     steps:
       - name: Build

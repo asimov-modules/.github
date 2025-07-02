@@ -21,6 +21,46 @@ on:
         required: false
         type: boolean
         default: false
+      build-linux-x86-gnu:
+        required: false
+        description: Build Linux x86 GNU binary?
+        type: boolean
+        default: true
+      build-linux-x86-musl:
+        required: false
+        description: Build Linux x86 MUSL binary?
+        type: boolean
+        default: true
+      build-linux-arm-gnu:
+        required: false
+        description: Build Linux ARM GNU binary?
+        type: boolean
+        default: true
+      build-linux-arm-musl:
+        required: false
+        description: Build Linux ARM MUSL binary?
+        type: boolean
+        default: true
+      build-macos-x86:
+        required: false
+        description: Build macOS x86 binary?
+        type: boolean
+        default: true
+      build-macos-arm:
+        required: false
+        description: Build macOS ARM binary?
+        type: boolean
+        default: true
+      build-windows:
+        required: false
+        description: Build Windows binary?
+        type: boolean
+        default: true
+      build-windows-native:
+        required: false
+        description: Build Windows binary natively (meaning on Windows, without cross-compiling)?
+        type: boolean
+        default: false
     secrets:
       ASIMOV_APP_ID:
         required: true
@@ -40,41 +80,49 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - os: ubuntu-latest
+          - enabled: ${{ inputs.build-linux-x86-gnu }}
+            os: ubuntu-latest
             artifact: linux-x86-gnu
             target: x86_64-unknown-linux-gnu
             build-homebrew-bottle: ${{ inputs.update_homebrew_tap }}
             use-zigbuild: true
             glibc-version: 2.28
-          - os: ubuntu-latest
+          - enabled: ${{ inputs.build-linux-arm-gnu }}
+            os: ubuntu-latest
             artifact: linux-arm-gnu
             target: aarch64-unknown-linux-gnu
             use-zigbuild: true
             glibc-version: 2.28
-          - os: ubuntu-latest
+          - enabled: ${{ inputs.build-linux-x86-musl }}
+            os: ubuntu-latest
             artifact: linux-x86-musl
             target: x86_64-unknown-linux-musl
             use-zigbuild: true
-          - os: ubuntu-latest
+          - enabled: ${{ inputs.build-linux-arm-musl }}
+            os: ubuntu-latest
             artifact: linux-arm-musl
             target: aarch64-unknown-linux-musl
             use-zigbuild: true
-          - os: macos-13
+          - enabled: ${{ inputs.build-macos-x86 }}
+            os: macos-13
             artifact: macos-x86
             target: x86_64-apple-darwin
             build-homebrew-bottle: ${{ inputs.update_homebrew_tap }}
-          - os: macos-15
+          - enabled: ${{ inputs.build-macos-arm }}
+            os: macos-15
             artifact: macos-arm
             target: aarch64-apple-darwin
             build-homebrew-bottle: ${{ inputs.update_homebrew_tap }}
-          - os: ubuntu-latest
+          - enabled: ${{ inputs.build-windows }}
+            os: ${{ inputs.build-windows-native && 'windows-latest' || 'ubuntu-latest' }}
             artifact: windows-x64
-            target: x86_64-pc-windows-gnu
+            target: ${{ inputs.build-windows-native && 'x86_64-pc-windows-msvc' || 'x86_64-pc-windows-gnu' }}
             extension: exe
-    name: Build ${{ matrix.artifact }}
+    name: Build module
     uses: asimov-modules/.github/.github/workflows/build-rust-module.yaml@master
     secrets: inherit
     with:
+      enabled: ${{ matrix.enabled }}
       os: ${{ matrix.os }}
       artifact: ${{ matrix.artifact }}
       target: ${{ matrix.target }}
