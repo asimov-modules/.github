@@ -80,6 +80,7 @@ jobs:
 
   build:
     needs: prepare-homebrew
+    if: ${{ always() }}
     strategy:
       fail-fast: true
       matrix:
