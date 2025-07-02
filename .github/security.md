@@ -2,7 +2,7 @@
 
 # How to report a security vulnerability
 
-To report a vulnerability, please email `security@asimov.so` with a
+To report a vulnerability, please email `security@asimov.systems` with a
 description of the problem, including the steps you took to reproduce the
 problem, the affected versions, and any known mitigations.
 
