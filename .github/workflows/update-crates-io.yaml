@@ -1,0 +1,15 @@
+# See: https://docs.github.com/en/actions/writing-workflows
+---
+name: Update crates.io
+
+on:
+  workflow_call:
+    secrets:
+      CRATES_TOKEN:
+        required: true
+
+jobs:
+  update-crates-io:
+    uses: asimov-platform/actions/.github/workflows/update-crates-io.yaml@master
+    secrets:
+      CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
