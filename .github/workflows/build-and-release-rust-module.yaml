@@ -21,6 +21,10 @@ on:
         required: false
         type: boolean
         default: false
+      update_crates_io:
+        required: false
+        type: boolean
+        default: false
       tweet_release:
         required: false
         type: boolean
@@ -176,3 +180,10 @@ jobs:
       packages: write
     with:
       bump_formula: ${{ needs.prepare-homebrew.outputs.bump_formula == 'true' }}
+
+  update-crates-io:
+    name: Update crates.io
+    if: ${{ inputs.update_crates_io }}
+    needs: release
+    uses: asimov-modules/.github/.github/workflows/update-crates-io.yaml@master
+    secrets: inherit
