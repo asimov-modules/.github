@@ -1,0 +1,93 @@
+# See: https://docs.github.com/en/actions/writing-workflows
+---
+name: Rust CI
+
+# WARNING! PLEASE READ BEFORE MAKING ANY CHANGES:
+#
+# This workflow is triggered on `pull_request_target` event,
+# which makes it highly prone to security issues,
+# as in this case we are executing untrusted, user-provided,
+# potentially malicious code from pull requests in an environment
+# that might contain overly permissive tokens or exposed secrets,
+# if not implemented properly.
+#
+# Please only modify this file if you know what you're doing.
+
+on:
+  workflow_call:
+    inputs:
+      check_formatting:
+        required: false
+        type: boolean
+        default: true
+      build_linux:
+        required: false
+        type: boolean
+        default: true
+      linux_dependencies:
+        required: false
+        type: string
+      build_macos:
+        required: false
+        type: boolean
+        default: true
+      macos_dependencies:
+        required: false
+        type: string
+      build_windows:
+        required: false
+        type: boolean
+        default: true
+      windows_dependencies:
+        required: false
+        type: string
+      check_lib:
+        required: false
+        type: boolean
+        default: true
+      check_bins:
+        required: false
+        type: boolean
+        default: true
+      check_tests:
+        required: false
+        type: boolean
+        default: true
+      check_examples:
+        required: false
+        type: boolean
+        default: true
+      check_doctests:
+        required: false
+        type: boolean
+        default: true
+      review_pr:
+        required: false
+        type: boolean
+        default: true
+    secrets:
+      ASIMOV_APP_ID:
+        required: true
+      ASIMOV_APP_PRIVATE_KEY:
+        required: true
+
+jobs:
+  ci:
+    uses: asimov-platform/actions/.github/workflows/ci-rust.yaml@master
+    secrets:
+      ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
+      ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
+    with:
+      check_formatting: ${{ inputs.check_formatting }}
+      build_linux: ${{ inputs.build_linux }}
+      linux_dependencies: ${{ inputs.linux_dependencies }}
+      build_macos: ${{ inputs.build_macos }}
+      macos_dependencies: ${{ inputs.macos_dependencies }}
+      build_windows: ${{ inputs.build_windows }}
+      windows_dependencies: ${{ inputs.windows_dependencies }}
+      check_lib: ${{ inputs.check_lib }}
+      check_bins: ${{ inputs.check_bins }}
+      check_tests: ${{ inputs.check_tests }}
+      check_examples: ${{ inputs.check_examples }}
+      check_doctests: ${{ inputs.check_doctests }}
+      review_pr: ${{ inputs.review_pr }}
