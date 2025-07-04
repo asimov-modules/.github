@@ -67,9 +67,9 @@ on:
         default: true
     secrets:
       ASIMOV_APP_ID:
-        required: true
+        required: false
       ASIMOV_APP_PRIVATE_KEY:
-        required: true
+        required: false
 
 jobs:
   ci:
