@@ -74,6 +74,10 @@ on:
 jobs:
   ci:
     uses: asimov-platform/actions/.github/workflows/ci-rust.yaml@master
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
     secrets:
       ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
       ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
