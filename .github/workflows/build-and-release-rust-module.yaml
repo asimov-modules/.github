@@ -76,6 +76,14 @@ on:
         required: true
       CRATES_TOKEN:
         required: false
+      X_APP_KEY:
+        required: false
+      X_APP_SECRET:
+        required: false
+      X_ACCESS_TOKEN:
+        required: false
+      X_ACCESS_SECRET:
+        required: false
 
 jobs:
   build:
@@ -107,8 +115,10 @@ jobs:
     needs: build
     uses: asimov-modules/.github/.github/workflows/tweet.yaml@master
     secrets:
-      ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
-      ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
+      X_APP_KEY: ${{ secrets.X_APP_KEY }}
+      X_APP_SECRET: ${{ secrets.X_APP_SECRET }}
+      X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+      X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
     with:
       message: |
         📦 ${{ github.event.repository.name }} ${{ github.ref_name }} has been released:
