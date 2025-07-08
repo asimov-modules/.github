@@ -103,7 +103,9 @@ jobs:
     if: ${{ inputs.tweet_release }}
     needs: build
     uses: asimov-modules/.github/.github/workflows/tweet.yaml@master
-    secrets: inherit
+    secrets:
+      ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
+      ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
     with:
       message: |
         📦 ${{ github.event.repository.name }} ${{ github.ref_name }} has been released:
