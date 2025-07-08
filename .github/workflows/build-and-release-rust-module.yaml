@@ -76,114 +76,35 @@ on:
         required: true
 
 jobs:
-  prepare-homebrew:
+  build:
     name: Prepare Homebrew
     if: ${{ inputs.update_homebrew_tap }}
-    uses: asimov-modules/.github/.github/workflows/prepare-homebrew-formula.yaml@master
-    secrets: inherit
-
-  build:
-    needs: prepare-homebrew
-    if: ${{ always() }}
-    strategy:
-      fail-fast: true
-      matrix:
-        include:
-          - enabled: ${{ inputs.build-linux-x86-gnu }}
-            os: ubuntu-latest
-            artifact: linux-x86-gnu
-            target: x86_64-unknown-linux-gnu
-            build-homebrew-bottle: ${{ inputs.update_homebrew_tap }}
-            use-zigbuild: true
-            glibc-version: 2.28
-          - enabled: ${{ inputs.build-linux-arm-gnu }}
-            os: ubuntu-latest
-            artifact: linux-arm-gnu
-            target: aarch64-unknown-linux-gnu
-            use-zigbuild: true
-            glibc-version: 2.28
-          - enabled: ${{ inputs.build-linux-x86-musl }}
-            os: ubuntu-latest
-            artifact: linux-x86-musl
-            target: x86_64-unknown-linux-musl
-            use-zigbuild: true
-          - enabled: ${{ inputs.build-linux-arm-musl }}
-            os: ubuntu-latest
-            artifact: linux-arm-musl
-            target: aarch64-unknown-linux-musl
-            use-zigbuild: true
-          - enabled: ${{ inputs.build-macos-x86 }}
-            os: macos-13
-            artifact: macos-x86
-            target: x86_64-apple-darwin
-            build-homebrew-bottle: ${{ inputs.update_homebrew_tap }}
-          - enabled: ${{ inputs.build-macos-arm }}
-            os: macos-15
-            artifact: macos-arm
-            target: aarch64-apple-darwin
-            build-homebrew-bottle: ${{ inputs.update_homebrew_tap }}
-          - enabled: ${{ inputs.build-windows }}
-            os: ${{ inputs.build-windows-native && 'windows-latest' || 'ubuntu-latest' }}
-            artifact: windows-x64
-            target: ${{ inputs.build-windows-native && 'x86_64-pc-windows-msvc' || 'x86_64-pc-windows-gnu' }}
-            extension: exe
-    name: Build module
-    uses: asimov-modules/.github/.github/workflows/build-rust-module.yaml@master
-    secrets: inherit
+    uses: asimov-platform/actions/.github/workflows/build-and-release-rust-package.yaml@master
+    secrets:
+      ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
+      ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
     with:
-      enabled: ${{ matrix.enabled }}
-      os: ${{ matrix.os }}
-      artifact: ${{ matrix.artifact }}
-      target: ${{ matrix.target }}
-      build_homebrew_bottle: ${{ matrix.build-homebrew-bottle || false }}
-      bump_homebrew_formula: ${{ inputs.update_homebrew_tap && needs.prepare-homebrew.outputs.bump_formula == 'true' || false }}
-      use_zigbuild: ${{ matrix.use-zigbuild || false }}
-      glibc_version: ${{ matrix.glibc-version }}
-      extension: ${{ matrix.extension }}
-      rust_toolchain: 1.85.0
-
-  release:
-    name: Release
-    if: ${{ inputs.create_release && startsWith(github.ref, 'refs/tags/') }}
-    needs: build
-    uses: asimov-modules/.github/.github/workflows/release-module.yaml@master
-    secrets: inherit
+      version: ${{ inputs.version }}
+      create_release: ${{ inputs.create_release }}
+      update_homebrew_tap: ${{ inputs.update_homebrew_tap }}
+      update_scoop_bucket: ${{ inputs.update_scoop_bucket }}
+      update_crates_io: ${{ inputs.update_crates_io }}
+      build-linux-x86-gnu: ${{ inputs.build-linux-x86-gnu }}
+      build-linux-x86-musl: ${{ inputs.build-linux-x86-musl }}
+      build-linux-arm-gnu: ${{ inputs.build-linux-arm-gnu }}
+      build-linux-arm-musl: ${{ inputs.build-linux-arm-musl }}
+      build-macos-x86: ${{ inputs.build-macos-x86 }}
+      build-macos-arm: ${{ inputs.build-macos-arm }}
+      build-windows: ${{ inputs.build-windows }}
+      build-windows-native: ${{ inputs.build-windows-native }}
 
   tweet-release:
     name: Tweet release
     if: ${{ inputs.tweet_release }}
-    needs: release
+    needs: build
     uses: asimov-modules/.github/.github/workflows/tweet.yaml@master
     secrets: inherit
     with:
       message: |
         📦 ${{ github.event.repository.name }} ${{ github.ref_name }} has been released:
         ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
-
-  update-scoop-bucket:
-    name: Update Scoop bucket
-    if: ${{ inputs.update_scoop_bucket && startsWith(github.ref, 'refs/tags/') }}
-    needs: release
-    uses: asimov-modules/.github/.github/workflows/update-scoop-bucket.yaml@master
-    secrets: inherit
-    with:
-      assets: ${{ needs.release.outputs.assets }}
-
-  update-homebrew-tap:
-    name: Update Homebrew tap
-    needs: [prepare-homebrew, release]
-    if: ${{ inputs.update_homebrew_tap && startsWith(github.ref, 'refs/tags/') }}
-    uses: asimov-modules/.github/.github/workflows/update-homebrew-tap.yaml@master
-    secrets: inherit
-    permissions:
-      contents: read
-      packages: write
-    with:
-      bump_formula: ${{ needs.prepare-homebrew.outputs.bump_formula == 'true' }}
-
-  update-crates-io:
-    name: Update crates.io
-    if: ${{ inputs.update_crates_io }}
-    needs: release
-    uses: asimov-modules/.github/.github/workflows/update-crates-io.yaml@master
-    secrets: inherit
