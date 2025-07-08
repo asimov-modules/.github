@@ -74,15 +74,18 @@ on:
         required: true
       ASIMOV_APP_PRIVATE_KEY:
         required: true
+      CRATES_TOKEN:
+        required: false
 
 jobs:
   build:
-    name: Prepare Homebrew
+    name: Build & Release Rust package
     if: ${{ inputs.update_homebrew_tap }}
     uses: asimov-platform/actions/.github/workflows/build-and-release-rust-package.yaml@master
     secrets:
       ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
       ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
+      CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
     with:
       version: ${{ inputs.version }}
       create_release: ${{ inputs.create_release }}
