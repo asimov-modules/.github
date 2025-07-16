@@ -29,6 +29,45 @@ on:
         required: false
         type: boolean
         default: false
+      linux_x86_dependencies:
+        required: false
+        description: |
+          Linux x86 dependencies step. Will be executed before the build.
+          Takes precedence over `linux_dependencies`.
+        type: string
+      linux_arm_dependencies:
+        required: false
+        description: |
+          Linux ARM dependencies step. Will be executed before the build.
+          Takes precedence over `linux_dependencies`.
+        type: string
+      linux_dependencies:
+        required: false
+        description: |
+          Linux dependencies step. Will be executed before the build.
+        type: string
+      macos_x86_dependencies:
+        required: false
+        description: |
+          macOS x86 dependencies step. Will be executed before the build.
+          Takes precedence over `macos_dependencies`.
+        type: string
+      macos_arm_dependencies:
+        required: false
+        description: |
+          macOS ARM dependencies step. Will be executed before the build.
+          Takes precedence over `macos_dependencies`.
+        type: string
+      macos_dependencies:
+        required: false
+        description: |
+          macOS dependencies step. Will be executed before the build.
+        type: string
+      windows_dependencies:
+        required: false
+        description: |
+          Windows dependencies step. Will be executed before the build.
+        type: string
       build-linux-x86-gnu:
         required: false
         description: Build Linux x86 GNU binary?
@@ -100,6 +139,11 @@ jobs:
       update_homebrew_tap: ${{ inputs.update_homebrew_tap }}
       update_scoop_bucket: ${{ inputs.update_scoop_bucket }}
       update_crates_io: ${{ inputs.update_crates_io }}
+      linux_x86_dependencies: ${{ inputs.linux_x86_dependencies }}
+      linux_arm_dependencies: ${{ inputs.linux_arm_dependencies }}
+      macos_x86_dependencies: ${{ inputs.macos_x86_dependencies }}
+      macos_arm_dependencies: ${{ inputs.macos_arm_dependencies }}
+      windows_dependencies: ${{ inputs.windows_dependencies }}
       build-linux-x86-gnu: ${{ inputs.build-linux-x86-gnu }}
       build-linux-x86-musl: ${{ inputs.build-linux-x86-musl }}
       build-linux-arm-gnu: ${{ inputs.build-linux-arm-gnu }}
