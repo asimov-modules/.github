@@ -138,8 +138,10 @@ jobs:
       update_homebrew_tap: ${{ inputs.update_homebrew_tap }}
       update_scoop_bucket: ${{ inputs.update_scoop_bucket }}
       update_crates_io: ${{ inputs.update_crates_io }}
+      linux_dependencies: ${{ inputs.linux_dependencies }}
       linux_x86_dependencies: ${{ inputs.linux_x86_dependencies }}
       linux_arm_dependencies: ${{ inputs.linux_arm_dependencies }}
+      macos_dependencies: ${{ inputs.macos_dependencies }}
       macos_x86_dependencies: ${{ inputs.macos_x86_dependencies }}
       macos_arm_dependencies: ${{ inputs.macos_arm_dependencies }}
       windows_dependencies: ${{ inputs.windows_dependencies }}
