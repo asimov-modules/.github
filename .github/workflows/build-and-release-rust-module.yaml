@@ -25,6 +25,10 @@ on:
         required: false
         type: boolean
         default: false
+      depends_on_openssl:
+        required: false
+        type: boolean
+        default: false
       tweet_release:
         required: false
         type: boolean
@@ -138,6 +142,7 @@ jobs:
       update_homebrew_tap: ${{ inputs.update_homebrew_tap }}
       update_scoop_bucket: ${{ inputs.update_scoop_bucket }}
       update_crates_io: ${{ inputs.update_crates_io }}
+      depends_on_openssl: ${{ inputs.depends_on_openssl }}
       linux_dependencies: ${{ inputs.linux_dependencies }}
       linux_x86_dependencies: ${{ inputs.linux_x86_dependencies }}
       linux_arm_dependencies: ${{ inputs.linux_arm_dependencies }}
