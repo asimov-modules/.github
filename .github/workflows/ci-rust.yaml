@@ -45,6 +45,10 @@ on:
         required: false
         type: boolean
         default: true
+      check_lib_no_default_features:
+        required: false
+        type: boolean
+        default: false
       check_bins:
         required: false
         type: boolean
@@ -90,6 +94,7 @@ jobs:
       build_windows: ${{ inputs.build_windows }}
       windows_dependencies: ${{ inputs.windows_dependencies }}
       check_lib: ${{ inputs.check_lib }}
+      check_lib_no_default_features: ${{ inputs.check_lib_no_default_features }}
       check_bins: ${{ inputs.check_bins }}
       check_tests: ${{ inputs.check_tests }}
       check_examples: ${{ inputs.check_examples }}
