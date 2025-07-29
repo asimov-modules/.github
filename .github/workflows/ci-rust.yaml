@@ -20,6 +20,10 @@ on:
         required: false
         type: boolean
         default: true
+      build_whole_workspace:
+        required: false
+        type: boolean
+        default: true
       build_linux:
         required: false
         type: boolean
@@ -87,6 +91,7 @@ jobs:
       ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
     with:
       check_formatting: ${{ inputs.check_formatting }}
+      build_whole_workspace: ${{ inputs.build_whole_workspace }}
       build_linux: ${{ inputs.build_linux }}
       linux_dependencies: ${{ inputs.linux_dependencies }}
       build_macos: ${{ inputs.build_macos }}
