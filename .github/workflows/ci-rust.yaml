@@ -16,6 +16,14 @@ name: Rust CI
 on:
   workflow_call:
     inputs:
+      formatting_toolchain:
+        required: false
+        type: string
+        default: stable
+      building_toolchain:
+        required: false
+        type: string
+        default: 1.85.0
       check_formatting:
         required: false
         type: boolean
@@ -90,6 +98,8 @@ jobs:
       ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
       ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
     with:
+      formatting_toolchain: ${{ inputs.formatting_toolchain }}
+      building_toolchain: ${{ inputs.building_toolchain }}
       check_formatting: ${{ inputs.check_formatting }}
       build_whole_workspace: ${{ inputs.build_whole_workspace }}
       build_linux: ${{ inputs.build_linux }}
