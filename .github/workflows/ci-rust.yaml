@@ -53,6 +53,9 @@ on:
       windows_dependencies:
         required: false
         type: string
+      additional_build_args:
+        required: false
+        type: string
       check_lib:
         required: false
         type: boolean
@@ -108,6 +111,7 @@ jobs:
       macos_dependencies: ${{ inputs.macos_dependencies }}
       build_windows: ${{ inputs.build_windows }}
       windows_dependencies: ${{ inputs.windows_dependencies }}
+      additional_build_args: ${{ inputs.additional_build_args }}
       check_lib: ${{ inputs.check_lib }}
       check_lib_no_default_features: ${{ inputs.check_lib_no_default_features }}
       check_bins: ${{ inputs.check_bins }}
