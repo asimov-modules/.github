@@ -75,6 +75,21 @@ on:
         description: |
           Windows dependencies step. Will be executed before the build.
         type: string
+      brew_linux_x86_dependencies:
+        required: false
+        description: |
+          Linux x86 dependencies step exclusive for Homebrew. Will be executed before the build.
+        type: string
+      brew_macos_x86_dependencies:
+        required: false
+        description: |
+          macOS x86 dependencies step exclusive for Homebrew. Will be executed before the build.
+        type: string
+      brew_macos_arm_dependencies:
+        required: false
+        description: |
+          macOS ARM dependencies step exclusive for Homebrew. Will be executed before the build.
+        type: string
       build-linux-x86-gnu:
         required: false
         description: Build Linux x86 GNU binary?
@@ -154,6 +169,9 @@ jobs:
       macos_x86_dependencies: ${{ inputs.macos_x86_dependencies }}
       macos_arm_dependencies: ${{ inputs.macos_arm_dependencies }}
       windows_dependencies: ${{ inputs.windows_dependencies }}
+      brew_linux_x86_dependencies: ${{ inputs.brew_linux_x86_dependencies }}
+      brew_macos_x86_dependencies: ${{ inputs.brew_macos_x86_dependencies }}
+      brew_macos_arm_dependencies: ${{ inputs.brew_macos_arm_dependencies }}
       build-linux-x86-gnu: ${{ inputs.build-linux-x86-gnu }}
       build-linux-x86-musl: ${{ inputs.build-linux-x86-musl }}
       build-linux-arm-gnu: ${{ inputs.build-linux-arm-gnu }}
