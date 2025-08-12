@@ -28,6 +28,10 @@ on:
       brew_build_depends_on:
         required: false
         type: string
+      rust_toolchain:
+        required: false
+        type: string
+        default: "1.85.0"
       tweet_release:
         required: false
         type: boolean
@@ -142,6 +146,7 @@ jobs:
       update_scoop_bucket: ${{ inputs.update_scoop_bucket }}
       update_crates_io: ${{ inputs.update_crates_io }}
       brew_build_depends_on: ${{ inputs.brew_build_depends_on }}
+      rust_toolchain: ${{ inputs.rust_toolchain }}
       linux_dependencies: ${{ inputs.linux_dependencies }}
       linux_x86_dependencies: ${{ inputs.linux_x86_dependencies }}
       linux_arm_dependencies: ${{ inputs.linux_arm_dependencies }}
