@@ -32,6 +32,10 @@ on:
         required: false
         type: string
         default: "1.85.0"
+      link_old_glibc:
+        required: false
+        type: boolean
+        default: true
       tweet_release:
         required: false
         type: boolean
@@ -162,6 +166,7 @@ jobs:
       update_crates_io: ${{ inputs.update_crates_io }}
       brew_build_depends_on: ${{ inputs.brew_build_depends_on }}
       rust_toolchain: ${{ inputs.rust_toolchain }}
+      link_old_glibc: ${{ inputs.link_old_glibc }}
       linux_dependencies: ${{ inputs.linux_dependencies }}
       linux_x86_dependencies: ${{ inputs.linux_x86_dependencies }}
       linux_arm_dependencies: ${{ inputs.linux_arm_dependencies }}
