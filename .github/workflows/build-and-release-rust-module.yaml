@@ -28,6 +28,9 @@ on:
       brew_build_depends_on:
         required: false
         type: string
+      brew_install_step:
+        required: false
+        type: string
       rust_toolchain:
         required: false
         type: string
@@ -165,6 +168,7 @@ jobs:
       update_scoop_bucket: ${{ inputs.update_scoop_bucket }}
       update_crates_io: ${{ inputs.update_crates_io }}
       brew_build_depends_on: ${{ inputs.brew_build_depends_on }}
+      brew_install_step: ${{ inputs.brew_install_step }}
       rust_toolchain: ${{ inputs.rust_toolchain }}
       link_old_glibc: ${{ inputs.link_old_glibc }}
       linux_dependencies: ${{ inputs.linux_dependencies }}
