@@ -97,6 +97,12 @@ on:
         description: |
           macOS ARM dependencies step exclusive for Homebrew. Will be executed before the build.
         type: string
+      env:
+        required: false
+        description: |
+          Environment variables to set before the build.
+          Format: key=value
+        type: string
       build-linux-x86-gnu:
         required: false
         description: Build Linux x86 GNU binary?
@@ -152,6 +158,8 @@ on:
         required: false
       X_ACCESS_SECRET:
         required: false
+      ENV:
+        required: false
 
 jobs:
   build:
@@ -161,6 +169,7 @@ jobs:
       ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
       ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
       CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
+      ENV: ${{ secrets.ENV }}
     with:
       version: ${{ inputs.version }}
       create_release: ${{ inputs.create_release }}
@@ -181,6 +190,7 @@ jobs:
       brew_linux_x86_dependencies: ${{ inputs.brew_linux_x86_dependencies }}
       brew_macos_x86_dependencies: ${{ inputs.brew_macos_x86_dependencies }}
       brew_macos_arm_dependencies: ${{ inputs.brew_macos_arm_dependencies }}
+      env: ${{ inputs.env }}
       build-linux-x86-gnu: ${{ inputs.build-linux-x86-gnu }}
       build-linux-x86-musl: ${{ inputs.build-linux-x86-musl }}
       build-linux-arm-gnu: ${{ inputs.build-linux-arm-gnu }}

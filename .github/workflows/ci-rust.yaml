@@ -56,6 +56,9 @@ on:
       additional_build_args:
         required: false
         type: string
+      env:
+        required: false
+        type: string
       check_lib:
         required: false
         type: boolean
@@ -89,6 +92,8 @@ on:
         required: false
       ASIMOV_APP_PRIVATE_KEY:
         required: false
+      ENV:
+        required: false
 
 jobs:
   ci:
@@ -100,6 +105,7 @@ jobs:
     secrets:
       ASIMOV_APP_ID: ${{ secrets.ASIMOV_APP_ID }}
       ASIMOV_APP_PRIVATE_KEY: ${{ secrets.ASIMOV_APP_PRIVATE_KEY }}
+      ENV: ${{ secrets.ENV }}
     with:
       formatting_toolchain: ${{ inputs.formatting_toolchain }}
       building_toolchain: ${{ inputs.building_toolchain }}
@@ -112,6 +118,7 @@ jobs:
       build_windows: ${{ inputs.build_windows }}
       windows_dependencies: ${{ inputs.windows_dependencies }}
       additional_build_args: ${{ inputs.additional_build_args }}
+      env: ${{ inputs.env }}
       check_lib: ${{ inputs.check_lib }}
       check_lib_no_default_features: ${{ inputs.check_lib_no_default_features }}
       check_bins: ${{ inputs.check_bins }}
