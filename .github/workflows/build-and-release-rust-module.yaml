@@ -199,6 +199,7 @@ jobs:
       build-macos-arm: ${{ inputs.build-macos-arm }}
       build-windows: ${{ inputs.build-windows }}
       build-windows-native: ${{ inputs.build-windows-native }}
+      files-to-copy: ".asimov/module.yaml"
 
   tweet-release:
     name: Tweet release
