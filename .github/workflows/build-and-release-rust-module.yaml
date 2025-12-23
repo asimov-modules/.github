@@ -201,7 +201,7 @@ jobs:
       build-windows-native: ${{ inputs.build-windows-native }}
       pre-compress-pass: |
         MODULE_NAME=$(yq -r '.name' ./.asimov/module.yaml)
-        OUTPUT_PATH="$OUTPUT_DIR/asimov-$MODULE_NAME-module.json"
+        OUTPUT_PATH="$OUTPUT_DIR/$MODULE_NAME.json"
         yq -o=json '{ "version": "${{ inputs.version }}" } + .' ./.asimov/module.yaml > "$OUTPUT_PATH"
         FILES=("$OUTPUT_PATH" "${FILES[@]}")
 
