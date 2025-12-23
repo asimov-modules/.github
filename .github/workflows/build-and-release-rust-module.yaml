@@ -199,7 +199,11 @@ jobs:
       build-macos-arm: ${{ inputs.build-macos-arm }}
       build-windows: ${{ inputs.build-windows }}
       build-windows-native: ${{ inputs.build-windows-native }}
-      files-to-copy: ".asimov/module.yaml"
+      pre-compress-pass: |
+        MODULE_NAME=$(yq -r '.name' ./.asimov/module.yaml)
+        OUTPUT_PATH="$OUTPUT_DIR/asimov-$MODULE_NAME-module.json"
+        yq -o=json '{ "version": "${{ inputs.version }}" } + .' ./.asimov/module.yaml > "$OUTPUT_PATH"
+        FILES+=("$OUTPUT_PATH")
 
   tweet-release:
     name: Tweet release
