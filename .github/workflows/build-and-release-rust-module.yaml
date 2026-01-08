@@ -143,6 +143,11 @@ on:
         description: Build Windows binary natively (meaning on Windows, without cross-compiling)?
         type: boolean
         default: false
+      build-android-arm:
+        required: false
+        description: Build Android ARM binary?
+        type: boolean
+        default: false
     secrets:
       ASIMOV_APP_ID:
         required: true
@@ -199,6 +204,7 @@ jobs:
       build-macos-arm: ${{ inputs.build-macos-arm }}
       build-windows: ${{ inputs.build-windows }}
       build-windows-native: ${{ inputs.build-windows-native }}
+      build-android-arm: ${{ inputs.build-android-arm }}
       pre-compress-pass: |
         # MODULE_NAME=$(yq -r '.name' ./.asimov/module.yaml)
         # OUTPUT_PATH="$OUTPUT_DIR/$MODULE_NAME.json"
