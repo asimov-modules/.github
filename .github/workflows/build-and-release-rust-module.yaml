@@ -34,7 +34,7 @@ on:
       rust_toolchain:
         required: false
         type: string
-        default: "1.85.0"
+        default: "1.93.0"
       link_old_glibc:
         required: false
         type: boolean

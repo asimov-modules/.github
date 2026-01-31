@@ -23,7 +23,7 @@ on:
       building_toolchain:
         required: false
         type: string
-        default: 1.85.0
+        default: "1.93.0"
       check_formatting:
         required: false
         type: boolean
