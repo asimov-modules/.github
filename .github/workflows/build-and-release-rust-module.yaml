@@ -127,7 +127,7 @@ on:
         required: false
         description: Build macOS x86 binary?
         type: boolean
-        default: true
+        default: false
       build-macos-arm:
         required: false
         description: Build macOS ARM binary?
