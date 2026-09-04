@@ -205,6 +205,7 @@ jobs:
       build-windows: ${{ inputs.build-windows }}
       build-windows-native: ${{ inputs.build-windows-native }}
       build-android-arm: ${{ inputs.build-android-arm }}
+      files-to-copy: README.md
       pre-compress-pass: |
         # MODULE_NAME=$(yq -r '.name' ./.asimov/module.yaml)
         # OUTPUT_PATH="$OUTPUT_DIR/$MODULE_NAME.json"
