@@ -87,11 +87,6 @@ on:
         description: |
           Linux x86 dependencies step exclusive for Homebrew. Will be executed before the build.
         type: string
-      brew_macos_x86_dependencies:
-        required: false
-        description: |
-          macOS x86 dependencies step exclusive for Homebrew. Will be executed before the build.
-        type: string
       brew_macos_arm_dependencies:
         required: false
         description: |
@@ -193,7 +188,6 @@ jobs:
       macos_arm_dependencies: ${{ inputs.macos_arm_dependencies }}
       windows_dependencies: ${{ inputs.windows_dependencies }}
       brew_linux_x86_dependencies: ${{ inputs.brew_linux_x86_dependencies }}
-      brew_macos_x86_dependencies: ${{ inputs.brew_macos_x86_dependencies }}
       brew_macos_arm_dependencies: ${{ inputs.brew_macos_arm_dependencies }}
       env: ${{ inputs.env }}
       build-linux-x86-gnu: ${{ inputs.build-linux-x86-gnu }}
